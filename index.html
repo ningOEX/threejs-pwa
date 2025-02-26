@@ -11,11 +11,15 @@
 
 <body>
     <div id="container"></div>
-    <script type="module">
-        // 现在浏览器支持ES6语法，自然包括import方式引入js文件
-        import * as THREE from './build/three.module.js';
-    </script>
-    <script src="main.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three/examples/jsm/"
+          }
+        }
+      </script>
+    <script type="module" src="./main.js" ></script>
     <script>
         // 注册 Service Worker
         if ('serviceWorker' in navigator) {

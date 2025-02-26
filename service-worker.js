@@ -1,41 +1,33 @@
-// 在 service-worker.js 中编写 Service Worker 代码，用于缓存资源和实现离线功能。
-const CACHE_NAME = 'threejs-pwa-v1';
-const ASSETS_TO_CACHE = [
+// service-worker.js
+
+const CACHE_NAME = 'my-cache-v1';
+const urlsToCache = [
     '/',
     '/index.html',
     '/styles.css',
     '/main.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r146/three.min.js'
+    'https://unpkg.com/three/build/three.module.js' // Ensure this URL is correct
 ];
 
-// 安装 Service Worker
-self.addEventListener('install', (event) => {
+// Install event
+self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-            .then(() => self.skipWaiting())
+            .then(cache => {
+                return cache.addAll(urlsToCache);
+            })
+            .catch(err => {
+                console.error('Failed to cache:', err);
+            })
     );
 });
 
-// 拦截网络请求
-self.addEventListener('fetch', (event) => {
+// Fetch event
+self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
-            .then((response) => response || fetch(event.request))
-    );
-});
-
-// 激活 Service Worker
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
+            .then(response => {
+                return response || fetch(event.request);
+            })
     );
 });
